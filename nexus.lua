@@ -10,7 +10,7 @@ local chatBox = peripheral.find("chatBox")
 
 
 --tp to nexus function
-function tpNexus(player)
+local function tpNexus(player)
 
     commands.tp(player, "730", "158", "-554")
     sleep(5)
@@ -19,7 +19,7 @@ function tpNexus(player)
 end
 
 --main chat listener
-function chatListener()
+local function chatListener()
 
     local event, username, message, uuid, isHidden = os.pullEvent("chat")
     

@@ -5,7 +5,7 @@ local mon = peripheral.wrap("top")
 
 --Format monitor
 
-function clear()
+local function clear()
     mon.setBackgroundColor(colors.black)
     mon.clear()
     mon.setCursorPos(1,1)
@@ -15,7 +15,7 @@ end
 
 --Draw text on monitor
 
-function drawText(x, y, text, textColor, bgColor)
+local function drawText(x, y, text, textColor, bgColor)
     mon.setBackgroundColor(bgColor)
     mon.setTextColor(textColor)
     mon.setCursorPos(x,y)
@@ -25,7 +25,7 @@ end
 
 --Draw horizontal line on monitor using dashes
 
-function drawLine(x, y, length, color)
+local function drawLine(x, y, length, color)
     mon.setBackgroundColor(color)
     mon.setCursorPos(x,y)
     mon.write(string.rep("*", length))
@@ -33,17 +33,17 @@ end
 
 --Draw vertical line on monitor using piping symbol
 
-function drawVertical(x, y, length, color)
+local function drawVertical(x, y, length, color)
     mon.setBackgroundColor(color)
     mon.setCursorPos(x,y)
     mon.write(string.rep("*", length))
 end
 
-function prepMon()
+local function prepMon()
     if mon == null then
         print("Error: no monitor detected")
     else
-        monX, monY = mon.getSize()
+        local monX, monY = mon.getSize()
         print("Found Monitor of size - X:"..monX.." and Y:"..monY)
         sleep(0.5)
         return monX, monY
@@ -52,9 +52,9 @@ end
 
 --Draw a grid on monitor marking each "pixel" or "cursor position"
 
-function drawGrid(color1, color2)
+local function drawGrid(color1, color2)
     
-    xTot, yTot = mon.getSize()
+    local xTot, yTot = mon.getSize()
    -- print("Found monitor with dimensions - X:"..xTot.." and Y:"..yTot)
     
     local xPos = 1
@@ -77,7 +77,7 @@ function drawGrid(color1, color2)
     end
 end
 
-function start()
+local function start()
     clear()
     print("DrawGrid")
     drawGrid(colors.blue, colors.orange)
@@ -97,11 +97,3 @@ function start()
 end
 
 start()
-        
-    
-    
-    
-    
-
-
-
