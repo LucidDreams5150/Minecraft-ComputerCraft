@@ -1,0 +1,123 @@
+local col = peripheral.find("colonyIntegrator")
+local mon = peripheral.wrap("right")
+
+
+
+function centerText(text, line, txtback, txtcolor, pos)
+    monX, monY = mon.getSize()
+    mon.setBackgroundColor(txtback)
+    mon.setTextColor(txtcolor)
+    length = string.len(text)
+    dif = math.floor(monX-length)
+    x = math.floor(dif/2)
+    
+    
+    if pos == "head" then
+        mon.setCursorPos(x+1, line)
+        mon.write(text)
+        
+    elseif pos == "left" then
+        mon.setCursorPos(2, line)
+        mon.write(text)
+    elseif pos == "right" then
+        mon.setCursorPos(monX-length, line)
+        mon.write(text)
+    end
+end
+
+function prepMon()
+    mon.clear()
+    mon.setBackgroundColor(colors.black)
+    mon.setTextScale(0.5)
+    centerText("The Dream Colony", 1, colors.purple, colors.orange, "head")
+    mon.setBackgroundColor(colors.black)
+end
+
+function findBuilderBuildings()
+    row = 4
+    for k, v in ipairs(col.getBuildings()) do
+        if v.name == "Builder" then
+            centerText(v.name, row, colors.black, colors.white, "left")
+            v.name = B1
+            centerText(v.name, row, colors.black, colors,white, "left")
+        else
+            v.name = other
+            centerText(v.name, row, colors.black, colors.white, "left")
+        row = row+1
+        end
+    end
+end
+
+function findbuilderlocation()
+    row = 3
+    useLeft = true
+    text = ""
+    numbuild = 0
+    for k, v in ipairs(col.getBuildings()) do
+        if row > 40 then
+            useLeft = false
+            row = 3
+        end
+        
+        if v.type == "builder" then
+            print("Found One!")
+            numbuild = numbuild + 1
+           -- print(row)
+            print("Key: "..k )
+            textSide = ""
+            if numbuild == 1 then
+                textSide = "left"
+            else
+                textSide = "right"
+            end
+            
+            centerText("Builder #"..numbuild.."'s Resource List: ", row, colors.black, colors.white, textSide)
+            row = row+1
+            
+            
+            for i, d in ipairs(col.getBuilderResources(v.location)) do
+               -- print("Builder #"..numbuild)
+               -- centerText("Display Name: ", row, colors.black, colors.white, "left")
+                if textutils.serialise(d.status) == "NOT_NEEDED" then
+                   print("Item Not Needed")
+                else          
+                    centerText("      "..textutils.serialise(d.displayName).."     ", row, colors.black, colors.white, textSide)
+                    centerText(textutils.serialise(d.needed), row, colors.black, colors.white, textSide)
+                    row = row+1
+                    print(textutils.serialise(d.displayName))
+                end
+            end
+            
+            --centerText(v.location[x], row, colors.black, colors.white, "left")
+           --debug-- print(v.location["x"],v.location["y"],v.location["z"])----WORKING!!
+           -- print(v.location["y"])----WORKING!!
+           -- print(v.location["z"])----WORKING!!
+           --debug-- print("xyz above")
+            
+          --  resList = {}
+          -- table.unpack(col.getBuilderResources(v.location)))
+         -- centerText(textutils.serialise(col.getBuilderResources(v.location)), row, colors.black, colors.white, "left")
+          
+         -- print(textutils.serialise(col.getBuilderResources(v.location)))
+            
+            
+        else
+            print("Not Builder, Skipping... ")
+           -- print(row)
+        end
+        row = row+1
+        sleep(1)
+    end
+end
+
+
+while true do
+    print("prepping monitor")
+    sleep(2)
+    prepMon()
+
+    findbuilderlocation()
+    sleep(30)
+end
+--findBuilderBuildings()
+

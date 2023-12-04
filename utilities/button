@@ -1,0 +1,203 @@
+--[[Created by LucidDreams]]--
+--Start of Button--
+local function Button(width, height, label, backgroundColorNormal, backgroundColorPressed, textColorNormal, textColorPressed, hasBorder, borderBGNormal, borderBGPressed, startCol, startRow, isPressed, defBGColor, defTextColor)
+    local button = {}
+    button.height = height or 1
+    button.width = width or 1
+    button.label = label or ""
+    button.backgroundColorNormal = backgroundColorNormal or colors.black
+    button.backgroundColorPressed = backgroundColorPressed or colors.white
+    button.textColorNormal = textColorNormal or colors.white
+    button.textColorPressed = textColorPressed or colors.black
+    button.hasBorder = hasBorder or false
+    button.borderBGNormal = borderBGNormal or backgroundColorNormal
+    button.borderBGPressed = borderBGPressed or backgroundColorPressed
+    button.defBGColor = defBGColor or colors.black
+    button.defTextColor = defTextColor or colors.white
+    button.startCol = startCol or 1
+    button.startRow = startRow or 1
+    button.isPressed = isPressed or false
+    
+    --Button press event 
+    function button.press()
+        button.isPressed = not button.isPressed
+    end   
+     
+    --Button click event
+    function button.clicked(column, row)
+        return (column >= button.startCol and column < button.startCol + button.width and row >= button.startRow and row < button.startRow + button.height)
+    end
+    
+
+    -- Handles displaying formatting and positioning button
+    function button.draw(display, isPressed, startCol, startRow)
+        --make sure button param is table and has values
+        if not button.width then
+            error("Required button argument missing or invalid.")
+        end
+        
+        
+        -- Make sure display param exists or default to terminal
+        display = display or term
+        
+        
+        --Checking state of button if supplied reset value in table(button.isPressed) if not, use what is in the table 
+        if isPressed == false or isPressed then
+            button.isPressed = isPressed
+        else
+            isPressed = button.isPressed
+        end
+        
+        --Check startCol and startRow --
+        --If not supplied, use existing, if supplied, update table with new values
+        
+        button.startCol = startCol or button.startCol  --verify value is present or use default
+        button.startRow = startRow or button.startRow
+        startRow = button.startRow                     --set to table value for remainder of call
+        startCol = button.startCol
+        
+        
+        local width = button.width
+        local height = button.height
+        local label = button.label
+        local labelPad = 2
+        local borderOffset = 0
+
+        --set border params and draw border if hasBorder
+        if button.hasBorder == true then
+            --button must be at least 3x3, if not, make it so
+            if width < 3 then
+                width = 3
+            end
+            if height < 3 then
+                height = 3
+            end
+            
+            
+            --set border colors
+            if not isPressed then
+                if not display.isColor() then
+                    display.setBackgroundColor(colors.white)
+                else
+                    display.setBackgroundColor(borderBGNormal)
+                end
+            else
+                if not display.isColor() then
+                    display.setBackgroundColor(colors.white)
+                else
+                    display.setBackgroundColor(borderBGPressed)
+                end
+            end
+            
+            --Draw button border
+            display.setCursorPos(startCol, startRow)
+            display.write(string.rep(" ", width))
+            for row = 2, height - 1 do
+                display.setCursorPos(startCol, button.startRow + row - 1)
+                display.write(" ")
+                display.setCursorPos(startCol+width - 1, startRow + row - 1)
+                display.write(" ")
+            end
+            display.setCursorPos(startCol, startRow + height - 1)
+            display.write(string.rep(" ", width))
+            
+            -- Reset startCol, startRow, width, column to inset button and label
+            startCol = startCol + 1
+            startRow = startRow + 1
+            width = width - 2
+            height = height -2
+        end
+            
+        -- set the button/label color to normal (not pressed) colors
+        if not isPressed then
+            if not display.isColor() then
+                display.setBackgroundColor(colors.black)
+                display.setTextColor(colors.white)
+            else
+                display.setBackgroundColor(backgroundColorNormal)
+                display.setTextColor(textColorNormal)
+            end
+        else
+            if not display.isColor() then
+                display.setBackgroundColor(colors.white)
+                display.setTextColor(colors.black)
+            else
+                display.setBackgroundColor(backgroundColorPressed)
+                display.setTextColor(textColorPressed)
+            end
+        end
+
+    
+        --draw button background (will be inside border if ther is one)
+        for row = 1, height do
+            display.setCursorPos(startCol, startRow + row - 1)
+            display.write(string.rep(" ", width))
+        end
+
+            --Prep label, truncate if needed
+        if width < 3 then
+            labelPad = 0
+        end
+
+        if #label > width - labelPad then
+            label = label:sub(1, width - labelPad)
+        end
+            
+        -- Draw label
+        display.setCursorPos(startCol + math.floor((width - #label)/2), startRow + math.floor((height - 1)/2))
+        display.write(label)
+        --Reset display to default colors
+        display.setBackgroundColor(button.defBGColor)
+        display.setTextColor(button.defTextColor)
+    end
+    
+    --Toggle state of button
+    function button.toggle()
+        button.isPressed = not button.isPressed
+        return button.isPressed
+    end        
+                
+    return button
+end
+    
+------------TEST CODE REMOVE LATER------------------
+--[[Example Buttons
+buttons.left = Button(7, 3, "<--", colors.lime, colors.pink, colors.white, colors.yellow, true, colors.green, colors.red, 1, 1, false, colors.black, colors.white)
+buttons.right = Button(7, 3, "-->", colors.lime, colors.pink, colors.white, colors.yellow, true, colors.green, colors.red, 9, 1, false, nil, nil)
+buttons.bottom = Button(10, 3, "Bottom", colors.lime, colors.pink, colors.white,colors.yellow, true, colors.green, colors.red, 3, 5, false, nil, nil)
+--Example Buttons]]
+
+buttons = {}
+for key, button in pairs(buttons) do
+    button.isPressed = redstone.getOutput(key) -- sync button to current redstone output
+    button.draw(mon)
+end
+
+while true do -- Infinite while loop
+    event = {os.pullEvent()} -- listens to all events
+    if event[1] == "monitor_touch" then
+        local found = false
+        for key, button in pairs(buttons) do
+            if button.clicked(event[3], event[4]) then --column and row
+                redstone.setOutput(key, button.toggle())
+                button.draw(mon)
+                found = true -- found button
+                break
+            end
+        end
+    end
+end
+------------END TEST CODE REMOVE LATER---------------
+
+
+
+
+
+
+
+
+
+
+
+
+
