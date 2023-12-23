@@ -1,10 +1,19 @@
 --Controls liquid compressors
-
+os.loadAPI("repo/util/touchpoint")
+local tpMain = touchpoint.new("back")
+local mainMon = peripheral.wrap("back")
 local redLevel --Redstone level read from pressure gauge
 local genStatus = false --if generators are on or off
 local emergencyCutoff = false --Emercengy shutoff lever
 
-
+local function mainMenu()
+    mainMon.clear()
+    mainMon.setTextScale(0.5)
+    mainMon.setCursorPos(1,1)
+    mainMon.setBackgroundColor(colors.gray)
+    tpMain:add("Manual Cutoff", nil, 1, 1, 15, 15)
+    tpMain:draw()
+end
 
 local function setup()
     print("Starting setup")
@@ -37,18 +46,6 @@ end
 
 local function monitorRedstone()
     redLevel = statelist["back"]
-    
---    if redLevel < 5 or redLevel < 6 then
---        genStatus = true --turn on generators if redstoneLevel is less then 5 (2bar)         
---          print("Enabled generators because redstone level "..redLevel.." was achived.")
---    elseif redLevel >= 7 then --turn off generators if redstoneLevel is greater than or equal to 7 (4bar)
---        genStatus = false
---        print("Disabled generators because redstone reached level "..redLevel)
---    else
---        print("No condition matched generators disabled for safety")
---        genStatus = false
---    end
---    rs.setOutput("left", genStatus)
     if redLevel >= 7 then
         genStatus = false
         print("Generators Disabled at rs level "..redLevel)
@@ -56,9 +53,7 @@ local function monitorRedstone()
         genStatus = true
         print("Generators enabled at rs level "..redLevel)
     end
-    
     rs.setOutput("left", genStatus)
-    
 end
 
 term.clear()
@@ -66,6 +61,7 @@ term.setCursorPos(1,1)
 print("Monitoring")
 setup()
 while true do
+    if rs.getInput("top") then print("manual cutoff enabled generators will not run") break end
     os.pullEvent("redstone") --yeild computer until  a redstone change is detected
     for side, state in pairs(statelist) do
         print(side.." is now "..tostring(rs.getInput(side)))

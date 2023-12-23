@@ -1,0 +1,96 @@
+--Various utility functions
+
+--find monitor
+os.loadAPI("repo/util/touchpoint")
+function findMon()
+    local periList = peripheral.getNames()
+
+    for i = 1, #periList do
+            print("I have a "..peripheral.getType(periList[i]).." attached as \""..periList[i].."\".")
+            if peripheral.getType(periList[i]) == "monitor" then
+                local mon = peripheral.wrap(periList[i])
+            else
+                print("no monitors")
+            end
+    end
+    return mon
+end
+
+function drawRegion(mon, startX, startY, endX, endY, BGColor)
+    peripheral.wrap(mon)
+    local width = endX - startX
+    local height = endY- startY
+    local maxX, maxY = mon.getSize()
+
+    if (startX > maxX or startY > maxY) or (endX > maxX or endY > maxY) then
+        print("Out of bounds")
+        print("Max dimensions are: X: "..maxX.." Y: "..drawRegion)
+    else
+        mon.setBackgroundColor(BGColor)
+        for row = 1, height do
+            mon.setCursorPos(startX, startY + row - 1)
+            mon.write(string.rep(" ", width))
+        end
+    end
+
+
+
+
+
+end
+
+
+
+function drawLabel(mon, label, startX, startY, endX, endY, BGColor, textColor)
+    peripheral.wrap(mon)
+    local width
+    local height
+    local maxSize = mon.getSize()
+end
+
+local function drawMenuBar()
+    local dis = peripheral.wrap("right")
+    term.redirect(dis)
+    paintutils.drawFilledBox(12,1,47,3,colors.red)
+    term.redirect(term.current())
+    dis.setTextColor(colors.white)
+    dis.setCursorPos(20,2)
+    dis.write("Central Farm Control")
+end
+
+buttonGrid = touchpoint.new("right")
+
+buttonGrid:add("Previous",nil,1,1,11,3)
+buttonGrid:add("Next",nil,48,1,57,3)
+
+buttonGrid:add("C1,R1",nil,2,5,12,8)    --column 1
+buttonGrid:add("C1,R2",nil,2,10,12,13)  --column 1
+buttonGrid:add("C1,R3",nil,2,15,12,18)  --column 1
+--
+buttonGrid:add("C2,R1",nil,15,5,25,8)   --column 2
+buttonGrid:add("C2,R2",nil,15,10,25,13) --column 2
+buttonGrid:add("C2,R3",nil,15,15,25,18) --column 2
+
+buttonGrid:add("C3,R1",nil,33,5,43,8)   --column 3
+buttonGrid:add("C3,R2",nil,33,10,43,13) --column 3
+buttonGrid:add("C3,R3",nil,33,15,43,18) --column 3
+
+buttonGrid:add("C4,R1",nil,46,5,56,8)   --column 4
+buttonGrid:add("C4,R2",nil,46,10,56,13) --column 4
+buttonGrid:add("C4,R3",nil,46,15,56,18) --column 4
+
+--****button width 10, height 3, padding 1, 3, 8, 3, 1****--
+
+--Finds the coordinates of each label (startX, startY, endX, endY) when provided the number of rows and cols 
+function labelGrid(mon, numRows, numCols)
+    local display = peripheral.wrap(mon) --wrap target display
+    local maxX, maxY = display.getSize() --get size of display
+    local incY = maxX/numCols --endY of C1R1 increment
+    local incX = maxY/numRows --endX of C1R1 increment
+    print("monitor divided incX:",incX, " incY",incY)
+    display.setCursorPos(1,1)
+    display.setBackgroundColor(colors.black)
+    display.clear()
+    term.redirect(display)
+    paintutils.drawFilledBox(1,1,57,3, colors.lightGray)
+end
