@@ -1,0 +1,33 @@
+local require
+
+do
+	local requireCache = {}
+	
+	require = function(file)
+		local absolute = shell.resolve(file)
+		if requireCache[absolute] ~= nil then
+			--# File already loaded, return cached resule
+			return requireCache[absolute]
+		end
+		
+		--# Create Custom Environment so loaded files have access to require
+		local env = {
+			require = require
+		}
+		
+		setmetatable(env, {__index = _G, __newindex = _G})
+		
+		--# Load source file
+		local chunk, err = loadfile(absolute, env)
+		
+		--# If chunk is nil, there was syntax error, or file does not exist
+		if chunk == nil then
+			return error(err)
+		end
+		
+		--# Execute the file, cache and return its return value
+		local result = chunk()
+		requireCache[absolute] = result
+		return result
+	end
+end

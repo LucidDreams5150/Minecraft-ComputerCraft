@@ -1,0 +1,25 @@
+--config for farm control unit
+
+local config = {}
+
+
+config.PARENT_MENU = {
+    "Main Menu",
+    "Vanilla Farms",
+    "Essence Famrs",
+    "Mob Farms",
+    "Resource Farms",
+    "Status Page",
+    "Other Farms",
+}
+
+config.SUB_MENU = {}
+
+config.REDNET_CHANNEL = {}
+
+config.REDSTONE_STATUS = {}
+
+config.THEME = {}
+
+
+return config

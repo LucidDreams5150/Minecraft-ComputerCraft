@@ -1,0 +1,56 @@
+--Various utility functions
+
+--find monitor
+
+function findMon()
+    local periList = peripheral.getNames()
+
+    for i = 1, #periList do
+            print("I have a "..peripheral.getType(periList[i]).." attached as \""..periList[i].."\".")
+            if peripheral.getType(periList[i]) == "monitor" then
+                local mon = peripheral.wrap(periList[i])
+            else
+                print("no monitors")
+            end
+    end
+    return mon
+end
+
+function drawRegion(mon, startX, startY, endX, endY, BGColor)
+    local currentBG = getBackgroundColor()
+    local width = endX - startX
+    local height = endY- startY
+    local maxX, maxY = mon.getSize()
+
+    if (startX > maxX or startY > maxY) or (endX > maxX or endY > maxY) then
+        print("Out of bounds")
+        print("Max dimensions are: X: "..maxX.." Y: "..drawRegion)
+    else
+       -- mon.setBackgroundColor(BGColor)
+        for row = 1, height do
+            mon.setBackgroundColor(BGColor)
+            mon.setCursorPos(startX, startY + row - 1)
+            mon.write(string.rep(" ", width))
+        end
+    end
+    mon.setBackgroundColor(currentBG)
+
+
+
+
+end
+
+
+
+function drawLabel(mon, label, startX, startY, endX, endY, BGColor, textColor)
+    peripheral.wrap(mon)
+    local width
+    local height
+    local maxSize = mon.getSize()
+end
+
+
+--TestCode
+display = peripheral.wrap("right")
+--display.clear()
+drawRegion(display, 2, 2, 3, 3, colors.blue)

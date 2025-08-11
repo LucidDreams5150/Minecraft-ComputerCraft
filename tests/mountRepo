@@ -1,0 +1,14 @@
+local target = "D:\\GitHub\\Minecraft-GITHUB\\Minecraft-ComputerCraft"
+
+local source = "msgh/"
+
+local function mnt(src, tgt)
+    if mounter.mount(src, tgt, false) then
+        print("Mounted")
+    else
+        print("Not Mounted")
+    end
+end
+
+mnt(source, target)
+

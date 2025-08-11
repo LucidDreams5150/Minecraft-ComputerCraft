@@ -1,0 +1,116 @@
+--Begining of program--
+--Created by LucidDreams--
+
+--*Begin importFiles*--
+--Open other non-API files and cache contents
+local require
+
+do
+	local requireCache = {}
+	
+	require = function(file)
+		local absolute = shell.resolve(file)
+		if requireCache[absolute] ~= nil then
+			--# File already loaded, return cached resule
+			return requireCache[absolute]
+		end
+		
+		--# Create Custom Environment so loaded files have access to require
+		local env = {
+			require = require
+		}
+		
+		setmetatable(env, {__index = _G, __newindex = _G})
+		
+		--# Load source file
+		local chunk, err = loadfile(absolute, env)
+		
+		--# If chunk is nil, there was syntax error, or file does not exist
+		if chunk == nil then
+			return error(err)
+		end
+		
+		--# Execute the file, cache and return its return value
+		local result = chunk()
+		requireCache[absolute] = result
+		return result
+	end
+end
+--*End importFiles*--
+--Program requirements--
+--local util = require("button.lua")
+require("buttonWithTestCode")
+
+myButtons = {}
+
+myButtons.left = Button(7, 3, "<--", colors.lime, colors.pink, colors.white, colors.yellow, true, colors.green, colors.red, 1, 1, false, nil, nil)
+myButtons.right = Button(7, 3, "-->", colors.lime, colors.pink, colors.white, colors.yellow, true, colors.green, colors.red, 9, 1, false, nil, nil)
+myButtons.bottom = Button(10, 3, "bot", colors.lime, colors.pink, colors.white, colors.yellow, true, colors.green,colors.red, 3, 5, false, nil, nil)
+
+local monitor = peripheral.wrap("top")
+
+
+--local function toggleLamp(lamp, state)
+--    local leftLamp
+--    local currentStateLeft = redstone.getOutput("left")
+--    local rightLamp
+--    local currentStateRight = redstone.getOutput("right")
+--    local botLamp
+--    local currentStateBot = redstone.getOutput("bottom")
+    
+    
+--    if lamp == "left" then
+--        if state == currentStateLeft then
+--        --nothing to do
+--        else --toggle state
+--            leftLamp = redstone.setOutput(state)
+--        end
+--    elseif lamp == "right" then
+--        if state == currentStateRight then
+--        --nothing to do
+--        else
+--            rightLamp = redstone.setOutput(state)
+--        end
+--    else if lamp == "bot" or "bottom" then
+--        if state == currentStateBot then
+--        --nothing to do
+--        else
+--            botLamp = redstone.setOutput(state)
+--        end
+--    else
+--        print("invalid lamp")
+--    end
+--end
+--end
+
+
+
+function setupDisplay()
+    monitor.clear()
+    monitor.setTextScale(1.5)
+    showButtons(monitor, myButtons)
+    
+    if left.isPressed then
+        print("left pressed")
+    elseif right.isPressed then
+        print("right pressed")
+    end
+    
+    print("setting up")
+end
+
+
+setupDisplay()
+    
+
+print("setting up your monitor")
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
