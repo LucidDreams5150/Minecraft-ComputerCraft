@@ -84,4 +84,86 @@ local function draw(state, ui, status, on, verCur, verPrev, preview)
   term.setCursorPos(2, 5); write(("Version  Cur: %s   Prev: %s"):format(verCur or "—", verPrev or "—"))
 
   if status then
-    term.setCursorPos(2, 7); term.se
+    term.setCursorPos(2, 7); term.setTextColor(colors.lightGray)
+    write(status)
+    term.setTextColor(colors.white)
+  end
+
+  -- Preview
+  local y = 9
+  term.setCursorPos(2, y); write("Served config (preview):")
+  y = y + 1
+
+  local lines = {}
+  if preview then
+    local s = serializePreview(preview)
+    for line in tostring(s):gmatch("([^\n]*)\n?") do table.insert(lines, line) end
+  else
+    lines = { "(no config loaded yet)" }
+  end
+
+  local maxLines = h - y - 1
+  for i = 1, math.min(#lines, maxLines) do
+    term.setCursorPos(2, y + i - 1)
+    local line = lines[i]
+    if #line > (w - 3) then line = line:sub(1, w - 4) .. "…" end
+    write(line)
+  end
+
+  ui.drawFooter("[T] Toggle  [R] Refresh  [B] Broadcast Now  [Q] Back")
+end
+
+function M.run(state, ui, util, store, server, PROTO, NAME)
+  util.clear()
+
+  local on       = getServerOn(state, server)
+  local verCur   = servedVersion(server, store)
+  local verPrev  = prevVersion(store)
+  local preview  = loadServedConfig(server, store)
+
+  draw(state, ui, nil, on, verCur, verPrev, preview)
+
+  while true do
+    local ev, a, b, c = os.pullEvent()
+
+    -- Let the server module consume events (timers/rednet/etc.) if it wants to
+    if server and type(server.handleEvent) == "function" then
+      local ok = pcall(server.handleEvent, state, ev, a, b, c, store, util, PROTO, NAME)
+      if not ok then -- ignore handler errors to keep UI responsive
+      end
+    end
+
+    if ev == "key" then
+      if a == keys.q then
+        return
+      elseif a == keys.t then
+        local ok = setServerOn(state, server, not on, store, util, PROTO, NAME)
+        on = getServerOn(state, server)
+        util.clear(); draw(state, ui, ok and "Toggled server." or "Toggle failed.", on, verCur, verPrev, preview)
+      elseif a == keys.r then
+        verCur  = servedVersion(server, store)
+        verPrev = prevVersion(store)
+        preview = loadServedConfig(server, store)
+        util.clear(); draw(state, ui, "Refreshed.", on, verCur, verPrev, preview)
+      elseif a == keys.b then
+        local ok = bumpNow(server) -- optional broadcast
+        util.clear(); draw(state, ui, ok and "Broadcast sent." or "Broadcast not available.", on, verCur, verPrev, preview)
+      end
+    elseif ev == "rednet_message" or ev == "timer" or ev == "monitor_resize" then
+      -- Passive refresh hooks
+      verCur  = servedVersion(server, store)
+      preview = loadServedConfig(server, store)
+      util.clear(); draw(state, ui, nil, on, verCur, verPrev, preview)
+    elseif ev == "mouse_click" then
+      -- Optional: click the ON/OFF status area to toggle (row 4)
+      local x,y = b,c
+      if y == 4 then
+        local ok = setServerOn(state, server, not on, store, util, PROTO, NAME)
+        on = getServerOn(state, server)
+        util.clear(); draw(state, ui, ok and "Toggled server." or "Toggle failed.", on, verCur, verPrev, preview)
+      end
+    end
+  end
+end
+
+return M
