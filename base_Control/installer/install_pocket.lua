@@ -3,7 +3,7 @@ local RAW = "https://raw.githubusercontent.com/LucidDreams5150/Minecraft-Compute
 local files = {
   "main.lua","ui.lua","util.lua","store.lua","server.lua",
   "page_labels.lua","page_stats.lua","page_server.lua",
-  "page_updates.lua","page_dist.lua",
+  "page_updates.lua","page_dist.lua","page_utils.lua",
 }
 local function fetch(url)
   local ok, h = pcall(http.get, url, {["Cache-Control"]="no-cache"})
@@ -38,3 +38,4 @@ if runAns=="" or runAns=="y" or runAns=="yes" then
 else
   print("Done. Run /basectl/main.lua to start.")
 end
+
