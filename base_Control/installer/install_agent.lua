@@ -1,4 +1,4 @@
--- install_agent.lua  (Distributor Agent)
+-- install_agent.lua (Distributor Agent)
 local RAW = "https://raw.githubusercontent.com/LucidDreams5150/Minecraft-ComputerCraft/main/base_Control/dist/dist_agent.lua"
 local function fetch(url)
   local ok, h = pcall(http.get, url, {["Cache-Control"]="no-cache"})
@@ -12,7 +12,7 @@ end
 
 print("Installing dist_agent.lua to /dist_agent.lua ...")
 local data, err = fetch(RAW)
-if not data then error("download failed: "..tostring(err)) end
+if not data then error("download failed (is the file in the repo?): "..tostring(err)) end
 write("/dist_agent.lua", data)
 print("  ✓ /dist_agent.lua")
 
