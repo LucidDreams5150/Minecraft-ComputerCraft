@@ -1,0 +1,12 @@
+One-liners (use these in CC:Tweaked)
+Mainframe (always-on server)
+wget run https://raw.githubusercontent.com/LucidDreams5150/Minecraft-ComputerCraft/main/base_Control/installers/install_mainframe.lua
+
+Pocket (BaseControl tablet)
+wget run https://raw.githubusercontent.com/LucidDreams5150/Minecraft-ComputerCraft/main/base_Control/installers/install_pocket.lua
+
+Label Client (any computer with advanced monitor)
+wget run https://raw.githubusercontent.com/LucidDreams5150/Minecraft-ComputerCraft/main/base_Control/installers/install_client.lua
+
+Distributor Agent (for remote pushing from Pocket)
+wget run https://raw.githubusercontent.com/LucidDreams5150/Minecraft-ComputerCraft/main/base_Control/installers/install_agent.lua
