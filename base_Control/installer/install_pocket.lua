@@ -1,4 +1,4 @@
--- install_pocket.lua  (BaseControl tablet)
+-- install_pocket.lua (BaseControl tablet)
 local RAW = "https://raw.githubusercontent.com/LucidDreams5150/Minecraft-ComputerCraft/main/base_Control/basectl"
 local files = {
   "main.lua","ui.lua","util.lua","store.lua","server.lua",
@@ -19,7 +19,7 @@ print("Installing BaseControl to /basectl ...")
 for _,name in ipairs(files) do
   local url = RAW.."/"..name
   local data, err = fetch(url)
-  if not data then error("Failed: "..name.." ("..tostring(err)..")") end
+  if not data then error("Missing on repo or HTTP error: "..name) end
   write("/basectl/"..name, data)
   print("  ✓ "..name)
 end
