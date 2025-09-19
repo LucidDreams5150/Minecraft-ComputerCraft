@@ -15,18 +15,19 @@ jobs:
           BRANCH: ${{ github.ref_name }}        # branch name
         run: |
           python3 - << 'PY'
-          import os, json, hashlib, time, re
+          import os, json, time, re
           from pathlib import Path
 
           repo = os.environ.get('REPO')
           branch = os.environ.get('BRANCH','main')
           base_raw = f"https://raw.githubusercontent.com/{repo}/{branch}"
 
-          # Pick files to publish
+          # Pick files to publish (now includes basectl/**)
           globs = [
             'clients/**/*.lua',
             'dist/**/*.lua',
             'mainframe/**/*.lua',
+            'basectl/**/*.lua',
           ]
 
           def vhash(data: bytes) -> str:
@@ -39,7 +40,7 @@ jobs:
           for g in globs:
             for p in Path('.').glob(g):
               if p.is_file():
-                rel = '/' + str(p).replace('\\', '/')
+                rel = '/' + str(p).replace('\\\', '/')
                 data = p.read_bytes()
                 files[rel] = {
                   'size': len(data),
@@ -56,9 +57,10 @@ jobs:
             return m.group(1) if m else None
 
           versions = {
-            'labelClient': grep_version('clients/labelClient.lua', r'CLIENT_VER\s*=\s*\"(v[0-9]+\.[0-9]+\.[0-9]+)\"') or 'unknown',
-            'distAgent':   grep_version('dist/dist_agent.lua', r'v([0-9]+\.[0-9]+\.[0-9]+)') or 'unknown',
-            'repoServer':  grep_version('mainframe/repo_server.lua', r'v([0-9]+\.[0-9]+\.[0-9]+)') or 'unknown',
+            'labelClient': grep_version('clients/labelClient.lua', r'CLIENT_VER\\s*=\\s*\\"(v[0-9]+\\.[0-9]+\\.[0-9]+)\\"') or 'unknown',
+            'distAgent':   grep_version('dist/dist_agent.lua', r'v([0-9]+\\.[0-9]+\\.[0-9]+)') or 'unknown',
+            'repoServer':  grep_version('mainframe/repo_server.lua', r'v([0-9]+\\.[0-9]+\\.[0-9]+)') or 'unknown',
+            'baseControl': grep_version('basectl/main.lua', r'APP_VER\\s*=\\s*\\"(v[0-9]+\\.[0-9]+\\.[0-9]+)\\"') or 'unknown',
           }
 
           manifest = {
