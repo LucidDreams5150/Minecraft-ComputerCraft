@@ -1,4 +1,4 @@
--- install_client.lua  (Label Client)
+-- install_client.lua (Label Client)
 local RAW = "https://raw.githubusercontent.com/LucidDreams5150/Minecraft-ComputerCraft/main/base_Control/clients/labelClient.lua"
 local function fetch(url)
   local ok, h = pcall(http.get, url, {["Cache-Control"]="no-cache"})
@@ -12,7 +12,7 @@ end
 
 print("Installing labelClient.lua to /labelClient.lua ...")
 local data, err = fetch(RAW)
-if not data then error("download failed: "..tostring(err)) end
+if not data then error("download failed (is the file in the repo?): "..tostring(err)) end
 write("/labelClient.lua", data)
 print("  ✓ /labelClient.lua")
 
